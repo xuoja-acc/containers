@@ -44,7 +44,7 @@ RUN /opt/bitnami/scripts/fluentd/postunpack.sh
 RUN apt-get update && apt-get -y install gpg procps
 RUN curl -sSL https://get.rvm.io | bash
 RUN usermod -a -G rvm root
-RUN source /etc/profile.d/rvm.sh && rvm requirements && rvm install 3.0.6 --verify-downloads 2
+RUN source /etc/profile.d/rvm.sh && rvm requirements && rvm install 3.1.4 --verify-downloads 2
 
 RUN rm -rf /opt/bitnami/ruby/bin && mkdir -p /opt/bitnami/ruby && ln -sf /usr/local/rvm/rubies/default/bin /opt/bitnami/ruby/bin
 ENV APP_VERSION="1.16.0" \
