@@ -19,7 +19,8 @@ ENV HOME="/" \
 COPY prebuildfs /
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Install required system packages and dependencies
-RUN install_packages ca-certificates curl libcrypt1 libgcc-s1 libjemalloc-dev libreadline-dev libreadline8 libssl-dev libssl1.1 libstdc++6 libtinfo6 procps sqlite3 zlib1g ruby-dev gcc make g++
+RUN install_packages ca-certificates curl libcrypt1 libgcc-s1 libjemalloc-dev libreadline-dev libreadline8 libssl-dev libssl1.1 libstdc++6 libtinfo6 procps sqlite3 zlib1g gcc make g++
+
 RUN mkdir -p /tmp/bitnami/pkg/cache/ && cd /tmp/bitnami/pkg/cache/ && \
     COMPONENTS=( \
       "gosu-1.16.0-5-linux-${OS_ARCH}-debian-11" \
@@ -39,7 +40,13 @@ RUN chmod g+rwX /opt/bitnami
 COPY rootfs /
 RUN /opt/bitnami/scripts/fluentd/postunpack.sh
 
-RUN rm -rf /opt/bitnami/ruby/bin && mkdir -p /opt/bitnami/ruby && ln -sf /usr/bin /opt/bitnami/ruby/bin
+# Install RVM
+RUN apt-get update && apt-get -y install gpg procps
+RUN curl -sSL https://get.rvm.io | bash
+RUN usermod -a -G rvm root
+RUN source /etc/profile.d/rvm.sh && rvm requirements && rvm install 2.7.8 --verify-downloads 2
+
+RUN rm -rf /opt/bitnami/ruby/bin && mkdir -p /opt/bitnami/ruby && ln -sf /usr/local/rvm/rubies/default/bin /opt/bitnami/ruby/bin
 ENV APP_VERSION="1.16.0" \
     BITNAMI_APP_NAME="fluentd" \
     GEM_HOME="/opt/bitnami/fluentd" \
